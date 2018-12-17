@@ -1,18 +1,18 @@
 import * as _ from 'lodash';
-import * as Commands from './commands.json';
 import convert from 'xml-js';
 import request from 'request-promise';
 import { BasicStatus } from './ResponseModels/BasicStatus';
-import { IBasicStatus } from './ResponseModels/IBasicStatus';
+import { Commands } from './Commands';
+import { IBasicStatus } from './ResponseModels/Interfaces/IBasicStatus';
 import { ICommands } from './ICommands';
-import { IConfig } from './ResponseModels/IConfig';
-import { IInput } from './ResponseModels/IInput';
-import { IPlayControl } from './ResponseModels/IPlayControl';
-import { IPlayInfo } from './ResponseModels/IPlayInfo';
-import { IPowerControl } from './ResponseModels/IPowerControl';
-import { IReceiverResponse } from './ResponseModels/IReceiverResponse';
+import { IConfig } from './ResponseModels/Interfaces/IConfig';
+import { IInput } from './ResponseModels/Interfaces/IInput';
+import { IPlayControl } from './ResponseModels/Interfaces/IPlayControl';
+import { IPlayInfo } from './ResponseModels/Interfaces/IPlayInfo';
+import { IPowerControl } from './ResponseModels/Interfaces/IPowerControl';
+import { IReceiverResponse } from './ResponseModels/Interfaces/IReceiverResponse';
 import { IStatus } from './IStatus';
-import { IVolume } from './ResponseModels/IVolume';
+import { IVolume } from './ResponseModels/Interfaces/IVolume';
 import { PlayInfo } from './ResponseModels/PlayInfo';
 
 export class YamahaNetworkReceiver {
@@ -82,10 +82,10 @@ export class YamahaNetworkReceiver {
                 if (nestedChanges && nestedChanges.length > 0) {
                     const nestedChangesArray = _.flattenDeep(nestedChanges);
                     for (let j = 0; j < nestedChangesArray.length; j++) {
-                        _.map(nestedChangesArray[j], (value, key, nestedChangesArrayColl: any) => {
+                        _.map(nestedChangesArray[j], (value: any, key: any, nestedChangesArrayColl: any) => {
                             if (key == "newValue") {
                                 const nestedChangeNewValue = value;
-                                _.map(newValue, (newValueValue, newValueKey, newValueColl) => {
+                                _.map(newValue, (newValueValue: any, newValueKey: any) => {
                                     if (nestedChangeNewValue == newValueValue.value) {
                                         nestedChangesArrayColl.key = newValueKey;
                                         return nestedChangesArrayColl;
@@ -135,6 +135,7 @@ export class YamahaNetworkReceiver {
             });
         }).catch((err) => {
             console.error.bind(console);
+            return err;
         });
         return response as any;
     }

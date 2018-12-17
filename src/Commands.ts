@@ -1,4 +1,4 @@
-{
+export const Commands = {
     "info": {
         "basicStatus": "<YAMAHA_AV cmd=\"GET\"><System><Basic_Status>GetParam</Basic_Status></System></YAMAHA_AV>",
         "playerInfo": "<YAMAHA_AV cmd=\"GET\"><Player><Play_Info>GetParam</Play_Info></Player></YAMAHA_AV>",
@@ -34,4 +34,4 @@
         "muteOn": "<YAMAHA_AV cmd=\"PUT\"><System><Volume><Mute>On</Mute></Volume></System></YAMAHA_AV>",
         "volume": "<YAMAHA_AV cmd=\"PUT\"><System><Volume><Lvl>[LEVEL]</Lvl></Volume></System></YAMAHA_AV>"
     }
-}
+};

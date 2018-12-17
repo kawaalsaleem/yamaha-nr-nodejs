@@ -1,4 +1,4 @@
-import { IInput } from './ResponseModels/IInput';
+import { IInput } from './ResponseModels/Interfaces/IInput';
 import { YamahaNetworkReceiver } from './YamahaNetworkReceiver';
 
 var networkReceiver = new YamahaNetworkReceiver("192.168.1.11");
@@ -14,4 +14,4 @@ setInterval(() => {
     console.log("artist", networkReceiver.status().trackInfo.artist);
     console.log("song", networkReceiver.status().trackInfo.song);
     console.log("--------------------------------");
-}, 1000);
+}, 5000);
