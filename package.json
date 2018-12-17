@@ -13,7 +13,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Kawa al Saleem",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@types/lodash": "^4.14.119",
     "@types/request-promise": "^4.1.42",
