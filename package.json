@@ -1,5 +1,5 @@
 {
-  "name": "yamaha-avr",
+  "name": "yamaha-nr-nodejs",
   "version": "1.0.0",
   "description": "Controls for a Yamaha stereo receiver",
   "dependencies": {
@@ -12,6 +12,15 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kawaalsaleem/yamaha-nr-nodejs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kawaalsaleem/yamaha-nr-nodejs/issues",
+    "email": "yamaha-nr-nodejs.bugs@kawa.nl"
+  },
+  "homepage": "https://github.com/kawaalsaleem/yamaha-nr-nodejs",
   "author": "Kawa al Saleem",
   "license": "MIT",
   "devDependencies": {
