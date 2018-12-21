@@ -1,3 +1,5 @@
+"use strict"
+
 import * as _ from 'lodash';
 import convert from 'xml-js';
 import request from 'request-promise';
@@ -21,6 +23,8 @@ export class YamahaNetworkReceiver {
     private _basicStatus: BasicStatus;
     private _playInfo: PlayInfo;
 
+    private interval: any;
+
     /**
     * The Yamaha Network Receiver Constructor.
     * @constructor
@@ -31,24 +35,17 @@ export class YamahaNetworkReceiver {
         this._commands = <any>Commands as ICommands;
         this._basicStatus = new BasicStatus();
         this._playInfo = new PlayInfo();
-
-        this.getBasicStatus().then((basicStatus) => {
-            this._basicStatus = basicStatus;
-        }).catch((error) => {
-            console.error(error);
-        });
-
-        this.getPlayerInfo().then((playerInfo) => {
-            this._playInfo = playerInfo;
-        }).catch((error) => {
-            console.error(error);
-        });
-
-        this.init();
     }
 
-    private init() {
-        setInterval(() => {
+    /**
+     * Initializes the continues update pulling
+     * @param interval The interval in milliseconds to request new values
+     */
+    public init(interval: number) {
+        if (!interval) {
+            interval = 5000;
+        }
+        this.interval = setInterval(() => {
             this.getBasicStatus().then((basicStatus) => {
                 if (!_.isEqual(this._basicStatus, basicStatus)) {
                     const changes = this.getChanges(this._basicStatus, basicStatus);
@@ -64,7 +61,14 @@ export class YamahaNetworkReceiver {
                     // notify
                 }
             });
-        }, 5000);
+        }, interval);
+    }
+
+    /**
+     * Destroys the continues update pulling
+     */
+    public destroy() {
+        clearInterval(this.interval);
     }
 
     /**
@@ -148,7 +152,7 @@ export class YamahaNetworkReceiver {
     async getBasicStatus(): Promise<IBasicStatus> {
         const receiverResponse = await this.SendXMLToReceiver(this._commands.info.basicStatus);
         return receiverResponse.YAMAHA_AV.System.Basic_Status;
-    };
+    }
 
     /** 
     * Gets the current selected input from the Network Receiver.
@@ -157,7 +161,7 @@ export class YamahaNetworkReceiver {
     async getSelectedInput(): Promise<string> {
         const receiverResponse = await this.SendXMLToReceiver(this._commands.info.selectedInput);
         return receiverResponse.YAMAHA_AV.System.Input.Input_Sel.value as string;
-    };
+    }
 
     /** 
     * Gets the current selected input from the Network Receiver.
@@ -166,7 +170,7 @@ export class YamahaNetworkReceiver {
     async getPlayerInfo(): Promise<IPlayInfo> {
         const receiverResponse = await this.SendXMLToReceiver(this._commands.info.playerInfo);
         return receiverResponse.YAMAHA_AV.Player.Play_Info;
-    };
+    }
 
     /** 
     * Gets the current selected input from the Network Receiver.
@@ -174,49 +178,66 @@ export class YamahaNetworkReceiver {
     */
     async getConfig(): Promise<IConfig> {
         const receiverResponse = await this.SendXMLToReceiver(this._commands.info.systemInfo);
-        return receiverResponse.YAMAHA_AV.System.Config;
-    };
+        if (receiverResponse.YAMAHA_AV) {
+            return receiverResponse.YAMAHA_AV.System.Config;
+        }
+        return {} as IConfig;
+    }
 
     /** 
     * Gets the volume level from the Network Receiver.
     * @returns {number} Returns the volume level as a number.
     */
-    getCurrentVolume(): number {
-        if (typeof this._basicStatus !== "undefined") {
+    async getVolume(): Promise<number> {
+        const receiverResponse = await this.SendXMLToReceiver(this._commands.info.basicStatus);
+        if (receiverResponse.YAMAHA_AV) {
+            return receiverResponse.YAMAHA_AV.System.Basic_Status.Volume.Lvl.value as number;
+        }
+        else {
+            return -1;
+        }
+    }
+
+    /** 
+    * Gets the volume level from the Network Receiver.
+    * @returns {number} Returns the volume level as a number.
+    */
+    volume(): number {
+        if (this._basicStatus.Volume.Lvl.value) {
             return this._basicStatus.Volume.Lvl.value as number;
         } else {
             return -1;
         }
-    };
+    }
 
     /** 
-    * Gets the current smute status from the Network Receiver.
+    * Gets the current mute status from the Network Receiver.
     * @returns {boolean} Returns the mute status as true or false.
     */
-    getIsMuted(): boolean {
-        if (typeof this._basicStatus !== "undefined") {
+    isMuted(): boolean {
+        if (this._basicStatus.Volume.Mute.value) {
             return this._basicStatus.Volume.Mute.value as boolean;
+        } else {
+            return true;
+        }
+    }
+
+    /** 
+    * Gets the current power status from the Network Receiver.
+    * @returns {boolean} Returns the mute status as true or false.
+    */
+    isOn(): boolean {
+        if (this._basicStatus.Power_Control.Power.value) {
+            return this._basicStatus.Power_Control.Power.value as boolean;
         } else {
             return false;
         }
-    };
+    }
 
-    /** 
-    * Gets the current smute status from the Network Receiver.
-    * @returns {boolean} Returns the mute status as true or false.
-    */
-    getIsOn(): boolean {
-        if (typeof this._basicStatus !== "undefined") {
-            return this._basicStatus.Volume.Mute.value as boolean;
-        } else {
-            return false;
-        }
-    };
-
-    status() : IStatus {
-        const status : IStatus = {
+    status(): IStatus {
+        const status: IStatus = {
             isOn: this._basicStatus.Power_Control.Power.value as boolean,
-            isOff: !this._basicStatus.Power_Control.Power.value as boolean,
+            isOff: this._basicStatus.Power_Control.Power.value == false as boolean,
             isMuted: this._basicStatus.Volume.Mute.value as boolean,
             isPlaying: (this._playInfo.Playback_Info.value === "Play") as boolean,
             currentInput: this._basicStatus.Input.Input_Sel.value as string,
@@ -243,7 +264,7 @@ export class YamahaNetworkReceiver {
     async muteOn(): Promise<IVolume> {
         const receiverResponse = await this.SendXMLToReceiver(this._commands.sound.muteOn);
         return receiverResponse.YAMAHA_AV.System.Volume;
-    };
+    }
 
     /** 
     * Turns mute off on the Network Receiver.
@@ -252,7 +273,7 @@ export class YamahaNetworkReceiver {
     async muteOff(): Promise<IVolume> {
         const receiverResponse = await this.SendXMLToReceiver(this._commands.sound.muteOff);
         return receiverResponse.YAMAHA_AV.System.Volume;
-    };
+    }
 
     /** 
     * Set the volume level
@@ -264,7 +285,7 @@ export class YamahaNetworkReceiver {
         volumeCommand = volumeCommand.replace("[LEVEL]", level.toString());
         const receiverResponse = await this.SendXMLToReceiver(volumeCommand);
         return receiverResponse.YAMAHA_AV.System.Volume;
-    };
+    }
     ///////////////////////////////////////////// End Volume Control /////////////////////////////////////////////
 
 
@@ -277,7 +298,7 @@ export class YamahaNetworkReceiver {
     async powerOn(): Promise<IPowerControl> {
         const receiverResponse = await this.SendXMLToReceiver(this._commands.power.on);
         return receiverResponse.YAMAHA_AV.System.Power_Control;
-    };
+    }
 
     /** 
     * Turn the Network Receiver power off.
@@ -286,7 +307,7 @@ export class YamahaNetworkReceiver {
     async powerOff(): Promise<IPowerControl> {
         const receiverResponse = await this.SendXMLToReceiver(this._commands.power.off);
         return receiverResponse.YAMAHA_AV.System.Power_Control;
-    };
+    }
     ///////////////////////////////////////////// End Power Control /////////////////////////////////////////////
 
 
@@ -299,7 +320,7 @@ export class YamahaNetworkReceiver {
     async stopPlayback(): Promise<IPlayControl> {
         const receiverResponse = await this.SendXMLToReceiver(this._commands.playback.stop);
         return receiverResponse.YAMAHA_AV.Player.Play_Control;
-    };
+    }
 
     /** 
     * Pauses playback on the Network Receiver.
@@ -308,7 +329,7 @@ export class YamahaNetworkReceiver {
     async pausePlayback(): Promise<IPlayControl> {
         const receiverResponse = await this.SendXMLToReceiver(this._commands.playback.pause);
         return receiverResponse.YAMAHA_AV.Player.Play_Control;
-    };
+    }
 
     /** 
     * Resumes playback on the Network Receiver.
@@ -317,7 +338,7 @@ export class YamahaNetworkReceiver {
     async resumePlayback(): Promise<IPlayControl> {
         const receiverResponse = await this.SendXMLToReceiver(this._commands.playback.play);
         return receiverResponse.YAMAHA_AV.Player.Play_Control;
-    };
+    }
 
     /** 
     * Skips track on the Network Receiver.
@@ -326,7 +347,7 @@ export class YamahaNetworkReceiver {
     async skipTrack(): Promise<IPlayControl> {
         const receiverResponse = await this.SendXMLToReceiver(this._commands.playback.skip);
         return receiverResponse.YAMAHA_AV.Player.Play_Control;
-    };
+    }
 
     /** 
     * Rewinds track on the Network Receiver.
@@ -335,7 +356,7 @@ export class YamahaNetworkReceiver {
     async rewindTrack(): Promise<IPlayControl> {
         const receiverResponse = await this.SendXMLToReceiver(this._commands.playback.rewind);
         return receiverResponse.YAMAHA_AV.Player.Play_Control;
-    };
+    }
     /////////////////////////////////////////// End Playback Control ///////////////////////////////////////////
 
 
@@ -348,7 +369,7 @@ export class YamahaNetworkReceiver {
     async selectSpotifyInput(): Promise<IInput> {
         const receiverResponse = await this.SendXMLToReceiver(this._commands.input.spotify);
         return receiverResponse.YAMAHA_AV.System.Input;
-    };
+    }
 
     /** 
     * Selects Digital 1 as the input source on the Network Receiver.
@@ -357,7 +378,7 @@ export class YamahaNetworkReceiver {
     async selectDigital1Input(): Promise<IInput> {
         const receiverResponse = await this.SendXMLToReceiver(this._commands.input.digital1);
         return receiverResponse.YAMAHA_AV.System.Input;
-    };
+    }
 
     /** 
     * Selects Digital 2 as the input source on the Network Receiver.
@@ -366,7 +387,7 @@ export class YamahaNetworkReceiver {
     async selectDigital2Input(): Promise<IInput> {
         const receiverResponse = await this.SendXMLToReceiver(this._commands.input.digital2);
         return receiverResponse.YAMAHA_AV.System.Input;
-    };
+    }
 
     /** 
     * Selects Aux 1 as the input source on the Network Receiver.
@@ -375,7 +396,7 @@ export class YamahaNetworkReceiver {
     async selectAux1Input(): Promise<IInput> {
         const receiverResponse = await this.SendXMLToReceiver(this._commands.input.aux1);
         return receiverResponse.YAMAHA_AV.System.Input;
-    };
+    }
 
     /** 
     * Selects Aux 2 as the input source on the Network Receiver.
@@ -384,7 +405,7 @@ export class YamahaNetworkReceiver {
     async selectAux2Input(): Promise<IInput> {
         const receiverResponse = await this.SendXMLToReceiver(this._commands.input.aux2);
         return receiverResponse.YAMAHA_AV.System.Input;
-    };
+    }
 
     /** 
     * Selects CD as the input source on the Network Receiver.
@@ -393,7 +414,7 @@ export class YamahaNetworkReceiver {
     async selectCDInput(): Promise<IInput> {
         const receiverResponse = await this.SendXMLToReceiver(this._commands.input.cd);
         return receiverResponse.YAMAHA_AV.System.Input;
-    };
+    }
 
     /** 
     * Selects Tuner as the input source on the Network Receiver.
@@ -402,7 +423,7 @@ export class YamahaNetworkReceiver {
     async selectTunerInput(): Promise<IInput> {
         const receiverResponse = await this.SendXMLToReceiver(this._commands.input.tuner);
         return receiverResponse.YAMAHA_AV.System.Input;
-    };
+    }
 
     /** 
     * Selects Server as the input source on the Network Receiver.
@@ -411,7 +432,7 @@ export class YamahaNetworkReceiver {
     async selectServerInput(): Promise<IInput> {
         const receiverResponse = await this.SendXMLToReceiver(this._commands.input.server);
         return receiverResponse.YAMAHA_AV.System.Input;
-    };
+    }
 
     /** 
     * Selects Internet Radio as the input source on the Network Receiver.
@@ -420,7 +441,7 @@ export class YamahaNetworkReceiver {
     async selectNetRadioInput(): Promise<IInput> {
         const receiverResponse = await this.SendXMLToReceiver(this._commands.input.netRadio);
         return receiverResponse.YAMAHA_AV.System.Input;
-    };
+    }
 
     /** 
     * Selects USB as the input source on the Network Receiver.
@@ -429,7 +450,7 @@ export class YamahaNetworkReceiver {
     async selectUSBInput(): Promise<IInput> {
         const receiverResponse = await this.SendXMLToReceiver(this._commands.input.usb);
         return receiverResponse.YAMAHA_AV.System.Input;
-    };
+    }
 
     /** 
     * Selects Apple AirPlay as the input source on the Network Receiver.
@@ -438,6 +459,6 @@ export class YamahaNetworkReceiver {
     async selectAirPlayInput(): Promise<IInput> {
         const receiverResponse = await this.SendXMLToReceiver(this._commands.input.airplay);
         return receiverResponse.YAMAHA_AV.System.Input;
-    };
+    }
     /////////////////////////////////////// End Input Selection Control ///////////////////////////////////////
 }

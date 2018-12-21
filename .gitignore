@@ -1,6 +1,6 @@
 # compiled files
-build
-
+bin
+__*
 # node modules
 node_modules
 

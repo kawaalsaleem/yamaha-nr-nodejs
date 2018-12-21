@@ -1,32 +1,48 @@
 {
-  "name": "yamaha-nr-nodejs",
-  "version": "1.0.0",
-  "description": "Controls for a Yamaha stereo receiver",
+  "author": "Kawa al Saleem",
+  "bin": {
+    "yamaha-nr-nodejs": "bin/release/yamaha-nr-nodejs.js"
+  },
+  "types": "bin/releas/yamaha-nr-nodejs.d.ts",
+  "typescript": {
+    "definition": "bin/releas/yamaha-nr-nodejs.d.ts"
+  },
+  "bugs": {
+    "email": "yamaha-nr-nodejs.bugs@kawa.nl",
+    "url": "https://github.com/kawaalsaleem/yamaha-nr-nodejs/issues"
+  },
   "dependencies": {
     "lodash": "^4.17.11",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
     "xml-js": "^1.6.8"
   },
-  "main": "YamahaNetworkReceiver.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "description": "Controls for a Yamaha stereo receiver",
+  "devDependencies": {
+    "@types/jest": "^23.3.10",
+    "@types/lodash": "^4.14.119",
+    "@types/request-promise": "^4.1.42",
+    "gh-pages": "^2.0.1",
+    "jest": "^23.6.0",
+    "ts-jest": "^23.10.5",
+    "tslint": "^5.11.0",
+    "typedoc": "^0.13.0",
+    "typescript": "^3.2.2"
   },
+  "homepage": "https://github.com/kawaalsaleem/yamaha-nr-nodejs",
+  "license": "MIT",
+  "main": "bin/release/yamaha-nr-nodejs.js",
+  "name": "yamaha-nr-nodejs",
   "repository": {
     "type": "git",
     "url": "https://github.com/kawaalsaleem/yamaha-nr-nodejs.git"
   },
-  "bugs": {
-    "url": "https://github.com/kawaalsaleem/yamaha-nr-nodejs/issues",
-    "email": "yamaha-nr-nodejs.bugs@kawa.nl"
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build",
+    "test": "jest --config jestconfig.json",
+    "docs": "typedoc --out docs src",
+    "gh-pages": "rimraf docs && npm run docs && gh-pages -d docs"
   },
-  "homepage": "https://github.com/kawaalsaleem/yamaha-nr-nodejs",
-  "author": "Kawa al Saleem",
-  "license": "MIT",
-  "devDependencies": {
-    "@types/lodash": "^4.14.119",
-    "@types/request-promise": "^4.1.42",
-    "tslint": "^5.11.0",
-    "typescript": "^3.2.2"
-  }
+  "version": "1.0.0"
 }
