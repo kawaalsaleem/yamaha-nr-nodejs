@@ -3,10 +3,10 @@
   "bin": {
     "yamaha-nr-nodejs": "bin/release/yamaha-nr-nodejs.js"
   },
-  "types": "bin/releas/yamaha-nr-nodejs.d.ts",
-  "typings": "bin/releas/yamaha-nr-nodejs.d.ts",
+  "types": "bin/release/yamaha-nr-nodejs.d.ts",
+  "typings": "bin/release/yamaha-nr-nodejs.d.ts",
   "typescript": {
-    "definition": "bin/releas/yamaha-nr-nodejs.d.ts"
+    "definition": "bin/release/yamaha-nr-nodejs.d.ts"
   },
   "bugs": {
     "email": "yamaha-nr-nodejs.bugs@kawa.nl",
@@ -45,5 +45,5 @@
     "docs": "typedoc --out docs src",
     "gh-pages": "rimraf docs && npm run docs && gh-pages -d docs"
   },
-  "version": "1.0.1"
+  "version": "1.0.2"
 }
