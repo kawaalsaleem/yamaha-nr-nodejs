@@ -2,4 +2,6 @@
 .git
 .hg
 ._*
+./__test__
 ./bin
+./src/test.ignore.ts

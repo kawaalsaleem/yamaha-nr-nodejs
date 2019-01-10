@@ -45,5 +45,5 @@
     "docs": "typedoc --out docs src",
     "gh-pages": "rimraf docs && npm run docs && gh-pages -d docs"
   },
-  "version": "1.0.2"
+  "version": "1.0.3"
 }

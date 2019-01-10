@@ -86,10 +86,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
 					<a name="interval" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> interval</h3>
-					<div class="tsd-signature tsd-kind-icon">interval<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Timeout</span><span class="tsd-signature-symbol"> =&nbsp;setInterval(() &#x3D;&gt; {if(iteration &#x3D;&#x3D;&#x3D; 9){clearInterval(interval);networkReceiver.destroy();}console.log(&quot;currentInput&quot;, networkReceiver.status().currentInput);console.log(&quot;isMuted&quot;, networkReceiver.status().isMuted);console.log(&quot;isOff&quot;, networkReceiver.status().isOff);console.log(&quot;isOn&quot;, networkReceiver.status().isOn);console.log(&quot;isPlaying&quot;, networkReceiver.status().isPlaying);console.log(&quot;playbackStsatus&quot;, networkReceiver.status().playbackStsatus);console.log(&quot;volume&quot;, networkReceiver.status().volume);console.log(&quot;album&quot;, networkReceiver.status().trackInfo.album);console.log(&quot;artist&quot;, networkReceiver.status().trackInfo.artist);console.log(&quot;song&quot;, networkReceiver.status().trackInfo.song);console.log(&#x60;-----------------${iteration}---------------&#x60;);iteration++;}, 5000)</span></div>
+					<div class="tsd-signature tsd-kind-icon">interval<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Timeout</span><span class="tsd-signature-symbol"> =&nbsp;setInterval(() &#x3D;&gt; {if(iteration &#x3D;&#x3D;&#x3D; 9){clearInterval(interval);networkReceiver.destroy();}const status &#x3D; networkReceiver.status();if(!status.currentInput) return;console.log(&quot;currentInput&quot;, status.currentInput);console.log(&quot;isMuted&quot;, status.isMuted);console.log(&quot;isOff&quot;, status.isOff);console.log(&quot;isOn&quot;, status.isOn);console.log(&quot;isPlaying&quot;, status.isPlaying);console.log(&quot;playbackStsatus&quot;, status.playbackStsatus);console.log(&quot;volume&quot;, status.volume);console.log(&quot;album&quot;, status.trackInfo.album);console.log(&quot;artist&quot;, status.trackInfo.artist);console.log(&quot;song&quot;, status.trackInfo.song);console.log(&#x60;-----------------${iteration}---------------&#x60;);iteration++;}, 5000)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in test.ignore.ts:11</li>
+							<li>Defined in <a href="https://github.com/kawaalsaleem/yamaha-nr-nodejs/blob/dfd1805/src/test.ignore.ts#L11">test.ignore.ts:11</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -99,7 +99,7 @@
 					<div class="tsd-signature tsd-kind-icon">iteration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;0</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in test.ignore.ts:4</li>
+							<li>Defined in <a href="https://github.com/kawaalsaleem/yamaha-nr-nodejs/blob/dfd1805/src/test.ignore.ts#L4">test.ignore.ts:4</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -109,7 +109,7 @@
 					<div class="tsd-signature tsd-kind-icon">network<wbr>Receiver<span class="tsd-signature-symbol">:</span> <a href="../classes/_yamahanetworkreceiver_.yamahanetworkreceiver.html" class="tsd-signature-type">YamahaNetworkReceiver</a><span class="tsd-signature-symbol"> =&nbsp;new YamahaNetworkReceiver(&quot;192.168.1.11&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in test.ignore.ts:6</li>
+							<li>Defined in <a href="https://github.com/kawaalsaleem/yamaha-nr-nodejs/blob/dfd1805/src/test.ignore.ts#L6">test.ignore.ts:6</a></li>
 						</ul>
 					</aside>
 				</section>

@@ -1,4 +1,4 @@
-import { IInput } from './ResponseModels/Interfaces/IInput';
+import { IInput } from './Interfaces/IInput';
 import { YamahaNetworkReceiver } from './YamahaNetworkReceiver';
 
 let iteration = 0;
@@ -13,16 +13,36 @@ const interval = setInterval(() => {
         clearInterval(interval);
         networkReceiver.destroy();
     }
-    console.log("currentInput", networkReceiver.status().currentInput);
-    console.log("isMuted", networkReceiver.status().isMuted);
-    console.log("isOff", networkReceiver.status().isOff);
-    console.log("isOn", networkReceiver.status().isOn);
-    console.log("isPlaying", networkReceiver.status().isPlaying);
-    console.log("playbackStsatus", networkReceiver.status().playbackStsatus);
-    console.log("volume", networkReceiver.status().volume);
-    console.log("album", networkReceiver.status().trackInfo.album);
-    console.log("artist", networkReceiver.status().trackInfo.artist);
-    console.log("song", networkReceiver.status().trackInfo.song);
+    const status = networkReceiver.status();
+    if(!status.currentInput) return;
+    console.log("currentInput", status.currentInput);
+    console.log("isMuted", status.isMuted);
+    console.log("isOff", status.isOff);
+    console.log("isOn", status.isOn);
+    console.log("isPlaying", status.isPlaying);
+    console.log("playbackStsatus", status.playbackStsatus);
+    console.log("volume", status.volume);
+    console.log("album", status.trackInfo.album);
+    console.log("artist", status.trackInfo.artist);
+    console.log("song", status.trackInfo.song);
     console.log(`-----------------${iteration}---------------`);
     iteration++;
 }, 5000);
+
+setTimeout(() => {
+    networkReceiver.control.setInput.digital1().then(response => {
+        console.log(response);
+        
+        setTimeout(() => {
+            networkReceiver.getVolume().then(origVol => {
+                networkReceiver.control.volume.setVolumeLevel(10).then(volume => {
+                    console.log(volume);
+                    networkReceiver.control.setInput.tuner().then(inputResponse => {
+                        console.log(inputResponse);
+                        networkReceiver.control.volume.setVolumeLevel(origVol);
+                    });
+                });
+            });            
+        }, 1000);
+    });    
+}, 9000);

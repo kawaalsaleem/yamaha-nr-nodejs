@@ -1,11 +1,11 @@
-import { IBasicStatus } from './ResponseModels/Interfaces/IBasicStatus';
-import { IConfig } from './ResponseModels/Interfaces/IConfig';
-import { IInput } from './ResponseModels/Interfaces/IInput';
-import { IPlayControl } from './ResponseModels/Interfaces/IPlayControl';
-import { IPlayInfo } from './ResponseModels/Interfaces/IPlayInfo';
-import { IPowerControl } from './ResponseModels/Interfaces/IPowerControl';
+import { IBasicStatus } from './Interfaces/IBasicStatus';
+import { IConfig } from './Interfaces/IConfig';
+import { IInput } from './Interfaces/IInput';
+import { IPlayControl } from './Interfaces/IPlayControl';
+import { IPlayInfo } from './Interfaces/IPlayInfo';
+import { IPowerControl } from './Interfaces/IPowerControl';
 import { IStatus } from './IStatus';
-import { IVolume } from './ResponseModels/Interfaces/IVolume';
+import { IVolume } from './Interfaces/IVolume';
 export declare class YamahaNetworkReceiver {
     private _ip;
     private _commands;
@@ -20,9 +20,9 @@ export declare class YamahaNetworkReceiver {
     constructor(ip: string);
     /**
      * Initializes the continues update pulling
-     * @param interval The interval in milliseconds to request new values
+     * @param intervalMs The interval in milliseconds to request new values
      */
-    init(interval: number): void;
+    init(intervalMs: number): void;
     /**
      * Destroys the continues update pulling
      */

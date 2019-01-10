@@ -7,15 +7,6 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Release",
-            "program": "${workspaceFolder}/bin/release/test.ignore.js",
-            "outFiles": [
-                "${workspaceFolder}/**/*.js"
-            ]
-        },
-        {
-            "type": "node",
-            "request": "launch",
             "name": "Dev",
             "program": "${workspaceFolder}/bin/debug/test.ignore.js",
             "outFiles": [
